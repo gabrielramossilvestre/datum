@@ -1,0 +1,26 @@
+services:
+  prova:
+    image: prova
+    ports:
+      - 8080:8080
+    depends_on:
+      rabbit-mq:
+        condition: service_healthy
+    networks:
+      - prova-network
+  rabbit-mq:
+    image: rabbitmq:3-management
+    healthcheck:
+      test: ["CMD", "rabbitmq-diagnostics", "-q", "ping"]
+      interval: 10s
+      retries: 5
+      start_period: 30s
+      timeout: 5s
+    networks:
+      - prova-network
+    ports:
+      - "15672:15672"
+      - "5672:5672"
+networks:
+  prova-network:
+    driver: bridge
